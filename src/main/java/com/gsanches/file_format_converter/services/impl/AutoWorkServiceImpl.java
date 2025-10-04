@@ -1,10 +1,10 @@
-package com.gsanches.file_format_converter.serviceAuto.impl;
+package com.gsanches.file_format_converter.services.impl;
 
 import com.gsanches.file_format_converter.dtos.AllWorkDto;
-import com.gsanches.file_format_converter.enums.ConversionEnum;
-import com.gsanches.file_format_converter.serviceAuto.AutoBasicOperationsService;
-import com.gsanches.file_format_converter.serviceAuto.AutoFileFormatConverterService;
-import com.gsanches.file_format_converter.serviceAuto.AutoWorkService;
+import com.gsanches.file_format_converter.enums.FileConversionEnum;
+import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
+import com.gsanches.file_format_converter.services.AutoFileFormatConverterService;
+import com.gsanches.file_format_converter.services.AutoWorkService;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,20 +29,30 @@ public class AutoWorkServiceImpl implements AutoWorkService {
 
         String uploadDestination = autoBasicOperationsService.uploadFile(file);
 
-        ConversionEnum wantedConversion = allWorkDto.wantedConversion();
+        FileConversionEnum wantedConversion = allWorkDto.wantedConversion();
 
         List<String> absoluteDownloadFilePaths = new ArrayList<>();
 
-        if(wantedConversion.equals(ConversionEnum.PDF_TO_IMAGE)){
+
+
+        if(wantedConversion.equals(FileConversionEnum.PDF_TO_IMAGE)){
             if(!checkFileFormat(file).equals("application/pdf")){
                 throw new RuntimeException("File format entry is not correct, method for pdf as an entry, but receiving " + checkFileFormat(file) + " instead.");
             }
-            absoluteDownloadFilePaths = autoFileFormatConverterService.pdfToImage(uploadDestination);
-        } else if (wantedConversion.equals(ConversionEnum.JPG_TO_PDF)) {
+            absoluteDownloadFilePaths = autoFileFormatConverterService.pdfToJpg(uploadDestination);
+        } else if(wantedConversion.equals(FileConversionEnum.JPG_TO_PDF)) {
             if(!checkFileFormat(file).equals("image/jpeg")){
                 throw new RuntimeException("File format entry is not correct, method for image/jpg as an entry, but receiving " + checkFileFormat(file) + " instead.");
             }
             absoluteDownloadFilePaths = autoFileFormatConverterService.jpgToPdf(uploadDestination);
+        } else if(wantedConversion.equals(FileConversionEnum.MERGE_PDF)){
+            if(!checkFileFormat(file).equals("")) {
+                throw new RuntimeException("File format entry is not correct, method for / as an entry, but receiving " + checkFileFormat(file) + " instead.");
+            }
+            absoluteDownloadFilePaths = autoFileFormatConverterService.listMergePdf(Collections.singletonList(uploadDestination));
+
+
+
         }
 
         autoBasicOperationsService.downloadFiles(absoluteDownloadFilePaths);

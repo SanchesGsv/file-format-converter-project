@@ -1,8 +1,8 @@
 package com.gsanches.file_format_converter.enums;
 
-public enum ConversionEnum {
+public enum FileConversionEnum {
     PDF_TO_IMAGE,
-    JPG_TO_PDF
-
+    JPG_TO_PDF,
+    MERGE_PDF
 
 }

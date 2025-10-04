@@ -1,6 +1,7 @@
-package com.gsanches.file_format_converter.serviceAuto.impl;
+package com.gsanches.file_format_converter.services.impl;
 
-import com.gsanches.file_format_converter.serviceAuto.AutoFileFormatConverterService;
+import com.gsanches.file_format_converter.services.AutoFileFormatConverterService;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -13,6 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +25,7 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
 
     //TODO: Adjust the returns, add throw
 
-    public List<String> pdfToImage(String absoluteCurrentFileLocation){
+    public List<String> pdfToJpg(String absoluteCurrentFileLocation){
 
         System.out.println("absoluteCurrentFileLocation" + absoluteCurrentFileLocation);
 
@@ -99,4 +101,45 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
         //TODO: May return a list even if on the catch part! Make sure to fix this things (even if is on another place)
         return List.of();
     }
+
+    @Override
+    public List<String> listMergePdf(List<String> absoluteCurrentFileLocationList) {
+        try {
+            PDFMergerUtility merger = new PDFMergerUtility();
+            for (String path: absoluteCurrentFileLocationList) {
+                merger.addSource(new File(path));
+            }
+            merger.setDestinationFileName(CONVERTED_FILE_FOLDER);
+            merger.mergeDocuments(null); // null = default memory settings
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //TODO: Change the return
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<String> listPdfToJpg(List<String> absoluteCurrentFileLocationList) {
+        List<String> destinationPaths = new ArrayList<>();
+
+        for(String path: absoluteCurrentFileLocationList){
+            //TODO: Certificate if the line above works
+            destinationPaths.addAll(pdfToJpg((path)));
+        }
+        return destinationPaths;
+    }
+
+    @Override
+    public List<String> listJpgToPdf(List<String> absoluteCurrentFileLocationList) {
+        List<String> destinationPaths = new ArrayList<>();
+
+        for(String path: absoluteCurrentFileLocationList){
+            //TODO: Certificate if the line above works
+            destinationPaths.addAll(jpgToPdf((path)));
+        }
+        return destinationPaths;
+    }
+
 }

@@ -1,8 +1,8 @@
-package com.gsanches.file_format_converter.serviceAuto.impl;
+package com.gsanches.file_format_converter.services.impl;
 
-import com.gsanches.file_format_converter.dtos.FileDto;
+import com.gsanches.file_format_converter.dtos.FileAutoBasicOperationsDto;
 import com.gsanches.file_format_converter.enums.FolderLocationEnum;
-import com.gsanches.file_format_converter.serviceAuto.AutoBasicOperationsService;
+import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -72,21 +72,21 @@ public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsServic
 
 
 
-    public ResponseEntity<Void> deleteFile(FileDto fileDto){
+    public ResponseEntity<Void> deleteFile(FileAutoBasicOperationsDto fileAutoBasicOperationsDto){
         String storagePath = "";
 
-        if(fileDto.deleteLocal() == FolderLocationEnum.ORIGINAL_FOLDER){
+        if(fileAutoBasicOperationsDto.deleteLocal().equals(FolderLocationEnum.ORIGINAL_FOLDER)){
             storagePath = ORIGINAL_FILE_FOLDER;
         }
-        else if(fileDto.deleteLocal() == FolderLocationEnum.CONVERTED_FOLDER){
+        else if(fileAutoBasicOperationsDto.deleteLocal().equals(FolderLocationEnum.CONVERTED_FOLDER)){
             storagePath = CONVERTED_FILE_FOLDER;
         }
         else{
-            System.out.println("Not a valid folder location " + fileDto.deleteLocal());
+            System.out.println("Not a valid folder location " + fileAutoBasicOperationsDto.deleteLocal());
         }
 
-        File file = new File(storagePath + "/" + fileDto.filename());
-        System.out.println("--- path -> " + storagePath + "/" + fileDto.filename());
+        File file = new File(storagePath + "/" + fileAutoBasicOperationsDto.filename());
+        System.out.println("--- path -> " + storagePath + "/" + fileAutoBasicOperationsDto.filename());
 
         if(!file.exists()){
             System.out.println("!file.exists()");

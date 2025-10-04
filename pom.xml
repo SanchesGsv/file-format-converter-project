@@ -50,7 +50,7 @@
 			<scope>test</scope>
 		</dependency>
 
-
+<!--        Change all the dependencies to the latest version, and also make sure if they work-->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
