@@ -15,5 +15,4 @@ public interface AutoBasicOperationsService {
 
     ResponseEntity<Void> deleteFile(FileAutoBasicOperationsDto fileAutoBasicOperationsDto);
     void deleteFiles(List<String> absoluteDownloadFilePaths);
-
 }
