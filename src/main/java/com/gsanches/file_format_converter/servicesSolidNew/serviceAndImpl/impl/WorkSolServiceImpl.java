@@ -44,6 +44,8 @@ public class WorkSolServiceImpl implements WorkSolService {
 
             allConvertedPaths = uploadPaths(uploadPaths);
 
+            System.out.println(" workSol " + uploadPaths);
+
         } else {
             for (MultipartFile file : files) {
                 String mimeType = validator.detectMimeType(file);
@@ -52,6 +54,9 @@ public class WorkSolServiceImpl implements WorkSolService {
                 }
 
                 String uploadPath = basicOperations.uploadFile(file);
+
+                System.out.println("before -> " + uploadPath);
+
                 allConvertedPaths.addAll(strategy.convert(uploadPath));
             }
         }

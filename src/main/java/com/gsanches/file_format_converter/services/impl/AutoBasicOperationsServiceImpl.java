@@ -38,6 +38,7 @@ public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsServic
             return destination.toString();
 
         } catch (IOException e) {
+            System.err.println("error " + e);
             return null;
         }
 
