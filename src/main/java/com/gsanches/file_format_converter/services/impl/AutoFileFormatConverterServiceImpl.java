@@ -25,7 +25,7 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
 
     //TODO: Adjust the returns, add throw
 
-    public List<String> pdfToJpg(String absoluteCurrentFileLocation){
+     public List<String> pdfToJpg(String absoluteCurrentFileLocation){
 
         System.out.println("absoluteCurrentFileLocation" + absoluteCurrentFileLocation);
 

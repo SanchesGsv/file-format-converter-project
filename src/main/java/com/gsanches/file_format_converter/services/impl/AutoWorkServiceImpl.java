@@ -25,11 +25,9 @@ public class AutoWorkServiceImpl implements AutoWorkService {
         this.autoFileFormatConverterService = autoFileFormatConverterService;
     }
 
-    public void makeEverythingWorks(MultipartFile file, AllWorkDto allWorkDto){
+    public void makeEverythingWorks(MultipartFile file, FileConversionEnum wantedConversion){
 
         String uploadDestination = autoBasicOperationsService.uploadFile(file);
-
-        FileConversionEnum wantedConversion = allWorkDto.wantedConversion();
 
         List<String> absoluteDownloadFilePaths = new ArrayList<>();
 
@@ -65,6 +63,8 @@ public class AutoWorkServiceImpl implements AutoWorkService {
 
 
     }
+
+
 
     private String checkFileFormat(MultipartFile file) {
         Tika tika = new Tika();

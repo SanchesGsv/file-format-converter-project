@@ -1,33 +1,31 @@
 package com.gsanches.file_format_converter.controllers;
 
-import com.gsanches.file_format_converter.dtos.AllWorkDto;
-import com.gsanches.file_format_converter.services.AutoWorkService;
-import org.springframework.http.MediaType;
+import com.gsanches.file_format_converter.enums.FileConversionEnum;
+import com.gsanches.file_format_converter.servicesSolidNew.serviceAndImpl.WorkSolService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 public class AutoWorkController {
 
-    private final AutoWorkService autoWorkService;
+    private final WorkSolService workSolService;
 
-    public AutoWorkController(AutoWorkService autoWorkService) {
-        this.autoWorkService = autoWorkService;
+    public AutoWorkController(WorkSolService workSolService) {
+        this.workSolService = workSolService;
     }
 
-    @PostMapping(value = "/work", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(
-            @RequestPart ("file") MultipartFile file,
-            @RequestPart AllWorkDto allWorkDto
+    @PostMapping("/pdf-to-image-sol")
+    public ResponseEntity<Void> workWithSol(
+            @RequestPart("files") List<MultipartFile> files
     ) {
-
-        autoWorkService.makeEverythingWorks(file, allWorkDto);
+        workSolService.workSol(files, FileConversionEnum.PDF_TO_IMAGE);
 
         return ResponseEntity.ok().build();
     }
-
-
-
 
 }
