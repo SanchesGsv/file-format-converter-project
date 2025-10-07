@@ -1,10 +1,10 @@
-package com.gsanches.file_format_converter.dtos;
+package com.gsanches.file_format_converter.dto;
 
 import com.gsanches.file_format_converter.enums.FolderLocationEnum;
 
 public record FileAutoBasicOperationsDto(
-    String filename,
-    FolderLocationEnum deleteLocal
+        String filename,
+        FolderLocationEnum deleteLocal
 
 ) {
 }

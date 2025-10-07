@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -20,16 +21,23 @@ import java.util.List;
 @Service
 public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConverterService {
 
-    private static final String ORIGINAL_FILE_FOLDER = "/home/sanches/Desktop/file-format-converter/src/main/java/com/gsanches/file_format_converter/storage/originalFile";
-    private static final String CONVERTED_FILE_FOLDER = "/home/sanches/Desktop/file-format-converter/src/main/java/com/gsanches/file_format_converter/storage/convertedFile";
+    @Value("${storage.uploads}")
+    private String convertedFileFolder;
 
-    //TODO: Adjust the returns, add throw
-
-     public List<String> pdfToJpg(String absoluteCurrentFileLocation){
+    //TODO: Take off the Sol name!
+    public List<String> pdfToJpg(String absoluteCurrentFileLocation) {
 
         System.out.println("pdfToJpg absoluteCurrentFileLocation " + absoluteCurrentFileLocation);
 
-        File pdfFile = new File(absoluteCurrentFileLocation);
+        //TODO: Put the line above on a try catch
+
+        File pdfFile;
+        try {
+            pdfFile = new File(absoluteCurrentFileLocation);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
 
         if (!pdfFile.exists()) {
             System.out.println("PDF file not found: " + absoluteCurrentFileLocation);
@@ -44,15 +52,13 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
             for (int i = 0; i < document.getNumberOfPages(); i++) { // For each page
                 BufferedImage image = renderer.renderImageWithDPI(i, 300);
                 String imageName = pdfFile.getName().replace(".pdf", "") + "_page_" + (i + 1) + ".jpg";
-                File imageFile = new File(CONVERTED_FILE_FOLDER, imageName);
+                File imageFile = new File(convertedFileFolder, imageName);
                 ImageIO.write(image, "jpg", imageFile);
                 System.out.println("Saved: " + imageFile.getAbsolutePath());
                 savedPaths.add(imageFile.getAbsolutePath());
             }
 
-        //TODO: Verify if I need the catch part!
-
-        return savedPaths;
+            return savedPaths;
 
         } catch (IOException e) {
             System.err.println("Error converting PDF: " + e.getMessage());
@@ -62,7 +68,6 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
 
     @Override
     public List<String> jpgToPdf(String absoluteCurrentFileLocation) {
-
         try {
             System.out.println("absoluteCurrentFileLocation jpgToPdf " + absoluteCurrentFileLocation);
 
@@ -88,44 +93,41 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
             contentStream.close();
 
             String filename = "newPdf.pdf";
-            File outputFolder = new File(CONVERTED_FILE_FOLDER);
+            File outputFolder = new File(convertedFileFolder);
 
             doc.save(new File(outputFolder, filename));
             doc.close();
 
+            return List.of();
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to convert JPG to PDF", e);
         }
-
-
-        //TODO: May return a list even if on the catch part! Make sure to fix this things (even if is on another place)
-        return List.of();
     }
 
     @Override
     public List<String> listMergePdf(List<String> absoluteCurrentFileLocationList) {
         try {
             PDFMergerUtility merger = new PDFMergerUtility();
-            for (String path: absoluteCurrentFileLocationList) {
+            for (String path : absoluteCurrentFileLocationList) {
                 merger.addSource(new File(path));
             }
-            merger.setDestinationFileName(CONVERTED_FILE_FOLDER);
-            merger.mergeDocuments(null); // null = default memory settings
+            merger.setDestinationFileName(convertedFileFolder);
+            merger.mergeDocuments(null);
+
+            return new ArrayList<>();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        //TODO: Change the return
-        return new ArrayList<>();
     }
 
     @Override
     public List<String> listPdfToJpg(List<String> absoluteCurrentFileLocationList) {
         List<String> destinationPaths = new ArrayList<>();
 
-        for(String path: absoluteCurrentFileLocationList){
-            //TODO: Certificate if the line above works
+        for (String path : absoluteCurrentFileLocationList) {
+            System.out.println("fileLocation AutoFileFormatConverter (path) -> " + path);
             destinationPaths.addAll(pdfToJpg((path)));
         }
         return destinationPaths;
@@ -135,8 +137,7 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
     public List<String> listJpgToPdf(List<String> absoluteCurrentFileLocationList) {
         List<String> destinationPaths = new ArrayList<>();
 
-        for(String path: absoluteCurrentFileLocationList){
-            //TODO: Certificate if the line above works
+        for (String path : absoluteCurrentFileLocationList) {
             destinationPaths.addAll(jpgToPdf((path)));
         }
         return destinationPaths;

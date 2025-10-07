@@ -1,7 +1,7 @@
-package com.gsanches.file_format_converter.servicesSolidNew.others;
+package com.gsanches.file_format_converter.factory;
 
+import com.gsanches.file_format_converter.strategy.FileConversionStrategy;
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
-import com.gsanches.file_format_converter.servicesSolidNew.conversionsRelated.FileConversionStrategy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

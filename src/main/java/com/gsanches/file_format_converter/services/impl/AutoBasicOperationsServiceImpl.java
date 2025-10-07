@@ -1,8 +1,9 @@
 package com.gsanches.file_format_converter.services.impl;
 
-import com.gsanches.file_format_converter.dtos.FileAutoBasicOperationsDto;
+import com.gsanches.file_format_converter.dto.FileAutoBasicOperationsDto;
 import com.gsanches.file_format_converter.enums.FolderLocationEnum;
 import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +23,16 @@ import java.util.Objects;
 @Service
 public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsService {
 
-    private static final String ORIGINAL_FILE_FOLDER = "/home/sanches/Desktop/file-format-converter/src/main/java/com/gsanches/file_format_converter/storage/originalFile";
-    private static final String CONVERTED_FILE_FOLDER = "/home/sanches/Desktop/file-format-converter/src/main/java/com/gsanches/file_format_converter/storage/convertedFile";
+    @Value("${storage.uploads}")
+    private String originalFileFolder;
 
-//    private final
+    @Value("${storage.converted}")
+    private String convertedFileFolder;
 
+    //TODO: Fix here!!!
     public String uploadFile(MultipartFile file){
         try {
-            File uploadDir = new File(ORIGINAL_FILE_FOLDER);
+            File uploadDir = new File(originalFileFolder);
 
             File destination = new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename()));
 
@@ -77,10 +80,10 @@ public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsServic
         String storagePath = "";
 
         if(fileAutoBasicOperationsDto.deleteLocal().equals(FolderLocationEnum.ORIGINAL_FOLDER)){
-            storagePath = ORIGINAL_FILE_FOLDER;
+            storagePath = originalFileFolder;
         }
         else if(fileAutoBasicOperationsDto.deleteLocal().equals(FolderLocationEnum.CONVERTED_FOLDER)){
-            storagePath = CONVERTED_FILE_FOLDER;
+            storagePath = convertedFileFolder;
         }
         else{
             System.out.println("Not a valid folder location " + fileAutoBasicOperationsDto.deleteLocal());

@@ -1,4 +1,4 @@
-package com.gsanches.file_format_converter.servicesSolidNew.conversionsRelated;
+package com.gsanches.file_format_converter.strategy;
 
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
 
