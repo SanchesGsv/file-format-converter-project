@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConverterService {
 
-    @Value("${storage.uploads}")
+    @Value("${storage.converted}")
     private String convertedFileFolder;
 
     //TODO: Take off the Sol name!

@@ -29,7 +29,6 @@ public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsServic
     @Value("${storage.converted}")
     private String convertedFileFolder;
 
-    //TODO: Fix here!!!
     public String uploadFile(MultipartFile file){
         try {
             File uploadDir = new File(originalFileFolder);
@@ -42,9 +41,9 @@ public class AutoBasicOperationsServiceImpl implements AutoBasicOperationsServic
 
         } catch (IOException e) {
             System.err.println("error " + e);
+
             return null;
         }
-
     }
 
 

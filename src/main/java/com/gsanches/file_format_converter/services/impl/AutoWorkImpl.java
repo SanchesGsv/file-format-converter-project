@@ -1,16 +1,23 @@
 package com.gsanches.file_format_converter.services.impl;
 
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
-import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
 import com.gsanches.file_format_converter.factory.ConversionStrategyFactory;
+import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
+import com.gsanches.file_format_converter.services.AutoWork;
 import com.gsanches.file_format_converter.strategy.FileConversionStrategy;
 import com.gsanches.file_format_converter.validator.FileFormatValidator;
-import com.gsanches.file_format_converter.services.AutoWork;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AutoWorkImpl implements AutoWork {
@@ -29,52 +36,59 @@ public class AutoWorkImpl implements AutoWork {
     @Override
     public void autoWork(List<MultipartFile> files, FileConversionEnum conversionType) {
 
-
-        //TODO: See what should return of here (above)
+        //Grab the strategy according to the file type
+        //Eg:
+        //JpgToPdfStrategy
+        //PdfToImageStrategy
         FileConversionStrategy strategy = strategyFactory.getStrategy(conversionType);
 
-        System.out.println("strategy (FileConversionStrategy) " + strategy);
-
-        List<String> allConvertedPaths = new ArrayList<>();
-
-//        if (conversionType == FileConversionEnum.MERGE_PDF) {
-//            List<String> uploadPaths = files.stream()
-//                    .map(basicOperations::uploadFile)
-//                    .collect(Collectors.toList());
-//
-//            //TODO: Use this method (under)
-////            allConvertedPaths = basicOperations.mergePdfFiles(uploadPaths);
-//
-//            allConvertedPaths = uploadPaths(uploadPaths);
-//
-//            System.out.println(" workSol " + uploadPaths);
-//
-//        } else {
-
+        //For each send file
         for (MultipartFile file : files) {
-            //TODO: Verify if the place is correct (put the code here!)
-            System.out.println("file -> !! " + file);
 
+            //Grab basically the file extension
+            //application/pdf
+            //image/jpeg
             String mimeType = validator.detectMimeType(file);
+
+            //Certificate that the strategy is the same as the file extension
             if (!strategy.supportsMimeType(mimeType)) {
                 throw new IllegalArgumentException("Invalid MIME type: " + mimeType);
             }
 
-            String uploadPath = basicOperations.uploadFile(file);
 
-            System.out.println("before -> " + uploadPath);
+            //Upload the original file
+            String pathOfOriginalUploadedFile = basicOperations.uploadFile(file);
 
-            allConvertedPaths.addAll(strategy.convert(uploadPath));
+
+            //Convert the original file and put on the converted folder
+            strategy.convert(pathOfOriginalUploadedFile);
+
+            //grab the paths from the converted folder for be possible to download these converted files.
         }
-//    }
 
-        System.out.println("allConvertedPaths " + allConvertedPaths);
-        basicOperations.downloadFiles(allConvertedPaths);
+          //TODO: Make the download part works!
+          //basicOperations.downloadFiles(grabAllConvertedFiles());
     }
 
-    //todo: Take off this from here, and also add logic!
-    private List<String> uploadPaths(List<String> paths) {
-        return paths;
+    @Value("${storage.converted}")
+    private String convertedFileFolder;
+
+    private List<String> grabAllConvertedFiles() {
+        Path path = Paths.get(convertedFileFolder);
+
+        //Return all the absolute file path
+        try {
+            return
+                Files.list(path)
+                .filter(Files::isRegularFile)
+                .map(p -> convertedFileFolder + p.getFileName().toString())
+                .collect(Collectors.toList()
+                );
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

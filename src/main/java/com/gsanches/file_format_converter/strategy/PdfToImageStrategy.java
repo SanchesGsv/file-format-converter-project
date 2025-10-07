@@ -17,7 +17,7 @@ public class PdfToImageStrategy implements FileConversionStrategy {
 
     @Override
     public FileConversionEnum getSupportedConversion() {
-        return FileConversionEnum.PDF_TO_IMAGE;
+        return FileConversionEnum.PDF_TO_JPG;
     }
 
     @Override
@@ -27,11 +27,6 @@ public class PdfToImageStrategy implements FileConversionStrategy {
 
     @Override
     public List<String> convert(String filePath) {
-        System.out.println("convert (pdfToImageStrategy) filePath " + filePath);
-        if(filePath.equals("") || filePath.isBlank()){
-            throw new RuntimeException("filePath should not be null");
-        }
-
         return converter.pdfToJpg(filePath);
     }
 }

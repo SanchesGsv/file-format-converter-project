@@ -19,9 +19,9 @@ public class AutoWorkController {
         this.autoWork = autoWork;
     }
 
-    @PostMapping("/pdf-to-image-sol")
-    public ResponseEntity<Void> workWithSol(@RequestPart("files") List<MultipartFile> files) {
-        autoWork.autoWork(files, FileConversionEnum.PDF_TO_IMAGE);
+    @PostMapping("/pdf-to-jpg")
+    public ResponseEntity<Void> pdfToImage(@RequestPart("files") List<MultipartFile> files) {
+        autoWork.autoWork(files, FileConversionEnum.PDF_TO_JPG);
 
         return ResponseEntity.ok().build();
     }
