@@ -29,6 +29,7 @@ public class AutoWorkImpl implements AutoWork {
     @Override
     public void autoWork(List<MultipartFile> files, FileConversionEnum conversionType) {
 
+
         //TODO: See what should return of here (above)
         FileConversionStrategy strategy = strategyFactory.getStrategy(conversionType);
 
