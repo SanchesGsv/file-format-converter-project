@@ -2,7 +2,7 @@ package com.gsanches.file_format_converter.services.impl;
 
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
 import com.gsanches.file_format_converter.factory.ConversionStrategyFactory;
-import com.gsanches.file_format_converter.services.AutoBasicOperationsService;
+import com.gsanches.file_format_converter.services.BasicOperationsService;
 import com.gsanches.file_format_converter.services.AutoWork;
 import com.gsanches.file_format_converter.strategy.FileConversionStrategy;
 import com.gsanches.file_format_converter.validator.FileFormatValidator;
@@ -11,22 +11,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class AutoWorkImpl implements AutoWork {
 
-    private final AutoBasicOperationsService basicOperations;
+    private final BasicOperationsService basicOperations;
     private final FileFormatValidator validator;
     private final ConversionStrategyFactory strategyFactory;
 
-    public AutoWorkImpl(AutoBasicOperationsService basicOperations, FileFormatValidator validator, ConversionStrategyFactory strategyFactory) {
+    public AutoWorkImpl(BasicOperationsService basicOperations, FileFormatValidator validator, ConversionStrategyFactory strategyFactory) {
         this.basicOperations = basicOperations;
         this.validator = validator;
         this.strategyFactory = strategyFactory;
@@ -66,8 +64,12 @@ public class AutoWorkImpl implements AutoWork {
             //grab the paths from the converted folder for be possible to download these converted files.
         }
 
-          //TODO: Make the download part works!
-          //basicOperations.downloadFiles(grabAllConvertedFiles());
+        System.out.println("converted Files -> " + grabAllConvertedFiles());
+
+        //TODO: Make the download part works!
+        basicOperations.downloadFiles(grabAllConvertedFiles());
+
+
     }
 
     @Value("${storage.converted}")
@@ -76,14 +78,13 @@ public class AutoWorkImpl implements AutoWork {
     private List<String> grabAllConvertedFiles() {
         Path path = Paths.get(convertedFileFolder);
 
-        //Return all the absolute file path
         try {
             return
-                Files.list(path)
-                .filter(Files::isRegularFile)
-                .map(p -> convertedFileFolder + p.getFileName().toString())
-                .collect(Collectors.toList()
-                );
+                    Files.list(path)
+                            .filter(Files::isRegularFile)
+                            .map(p -> convertedFileFolder + "/" + p.getFileName().toString())
+                            .collect(Collectors.toList()
+                            );
 
         } catch (IOException e) {
             throw new RuntimeException(e);
