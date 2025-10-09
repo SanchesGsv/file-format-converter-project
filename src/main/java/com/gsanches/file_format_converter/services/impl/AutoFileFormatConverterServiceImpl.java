@@ -17,12 +17,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConverterService {
 
     @Value("${storage.converted}")
     private String convertedFileFolder;
+
+    @Value("${storage.uploads}")
+    private String uploadsFileFolder;
 
     //TODO: Take off the Sol name!
     public List<String> pdfToJpg(String absoluteCurrentFileLocation) {
@@ -92,8 +96,16 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
             contentStream.drawImage(image, x, y, imgWidth * scale, imgHeight * scale);
             contentStream.close();
 
-            String filename = "newPdf.pdf";
+            String filename = (
+                    absoluteCurrentFileLocation
+                            .substring(uploadsFileFolder.length() + "/".length(),
+                                    absoluteCurrentFileLocation.length() - ".jpg".length()
+                            )
+                            + ".pdf"
+            );
+
             File outputFolder = new File(convertedFileFolder);
+
 
             doc.save(new File(outputFolder, filename));
             doc.close();

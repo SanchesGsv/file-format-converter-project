@@ -26,6 +26,7 @@ public class AutoWorkController {
         return ResponseEntity.ok().build();
     }
 
+    //TODO: Bug fix: If we post more than one file, make he also receive more than this one file.
     @PostMapping("/jpg-to-pdf")
     public ResponseEntity<Void> jpgToPdf(@RequestPart("files") List<MultipartFile> files){
         autoWork.autoWork(files, FileConversionEnum.JPG_TO_PDF);

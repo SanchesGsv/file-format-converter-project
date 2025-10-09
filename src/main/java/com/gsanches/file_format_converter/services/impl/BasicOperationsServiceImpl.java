@@ -55,6 +55,7 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
 
 
     //TODO: Fix the download part here (singular and plural), on the autoWork service impl, and also add the throw's
+    //TODO: Do not use this type of return here (ResponseEntity)!
     public ResponseEntity<Resource> downloadFile(String absoluteDownloadFilePath){
         //TODO: Make sure that the file to be downloaded is on the converted or uploads folder
         //Maybe do a single place for put all of these exceptions
@@ -65,13 +66,11 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
             throw new RuntimeException("Path should start with correct folder path, actual path -> " + absoluteDownloadFilePath);
         }
 
-
         try {
             Path filePath = Paths.get(absoluteDownloadFilePath);
 
             byte[] data = Files.readAllBytes(filePath);
             ByteArrayResource resource = new ByteArrayResource(data);
-
 
             //TODO: see if should I put the correct name for these things.
             return ResponseEntity.ok()
@@ -87,7 +86,7 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
 
     //TODO: See if should I create another class, only for the multiple tasks (for example downloadsFiles[plural] on the anther class, and downloadFile on this class[singular])
     public void downloadFiles(List<String> absoluteDownloadFilePaths){
-        for (String absoluteDownloadFilePath : absoluteDownloadFilePaths) {
+        for (String absoluteDownloadFilePath: absoluteDownloadFilePaths) {
             downloadFile(absoluteDownloadFilePath);
         }
     }
