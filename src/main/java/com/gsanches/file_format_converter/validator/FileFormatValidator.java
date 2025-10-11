@@ -1,4 +1,4 @@
-package com.gsanches.file_format_converter.servicesSolidNew.others;
+package com.gsanches.file_format_converter.validator;
 
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;

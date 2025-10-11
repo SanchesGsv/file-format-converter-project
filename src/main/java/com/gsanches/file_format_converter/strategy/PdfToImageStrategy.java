@@ -1,11 +1,8 @@
-package com.gsanches.file_format_converter.servicesSolidNew.conversionsRelated.conversions;
+package com.gsanches.file_format_converter.strategy;
 
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
 import com.gsanches.file_format_converter.services.AutoFileFormatConverterService;
-import com.gsanches.file_format_converter.servicesSolidNew.conversionsRelated.FileConversionStrategy;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class PdfToImageStrategy implements FileConversionStrategy {
@@ -18,7 +15,7 @@ public class PdfToImageStrategy implements FileConversionStrategy {
 
     @Override
     public FileConversionEnum getSupportedConversion() {
-        return FileConversionEnum.PDF_TO_IMAGE;
+        return FileConversionEnum.PDF_TO_JPG;
     }
 
     @Override
@@ -27,7 +24,7 @@ public class PdfToImageStrategy implements FileConversionStrategy {
     }
 
     @Override
-    public List<String> convert(String filePath) {
-        return converter.pdfToJpg(filePath);
+    public void convert(String filePath) {
+        converter.pdfToJpg(filePath);
     }
 }
