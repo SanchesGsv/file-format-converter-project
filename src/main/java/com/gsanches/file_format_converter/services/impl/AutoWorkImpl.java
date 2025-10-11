@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class AutoWorkImpl implements AutoWork {
 
+    @Value("${storage.converted}")
+    private String convertedFileFolder;
+
     private final BasicOperationsService basicOperations;
     private final FileFormatValidator validator;
     private final ConversionStrategyFactory strategyFactory;
@@ -29,7 +32,6 @@ public class AutoWorkImpl implements AutoWork {
         this.validator = validator;
         this.strategyFactory = strategyFactory;
     }
-
 
     @Override
     public void autoWork(List<MultipartFile> files, FileConversionEnum conversionType) {
@@ -53,27 +55,19 @@ public class AutoWorkImpl implements AutoWork {
                 throw new IllegalArgumentException("Invalid MIME type: " + mimeType);
             }
 
-
             //Upload the original file
             String pathOfOriginalUploadedFile = basicOperations.uploadFile(file);
 
-
             //Convert the original file and put on the converted folder
             strategy.convert(pathOfOriginalUploadedFile);
-
-            //grab the paths from the converted folder for be possible to download these converted files.
         }
 
         System.out.println("converted Files -> " + grabAllConvertedFiles());
 
         //TODO: Make the download part works!
         basicOperations.downloadFiles(grabAllConvertedFiles());
-
-
     }
 
-    @Value("${storage.converted}")
-    private String convertedFileFolder;
 
     private List<String> grabAllConvertedFiles() {
         Path path = Paths.get(convertedFileFolder);

@@ -4,8 +4,6 @@ import com.gsanches.file_format_converter.enums.FileConversionEnum;
 import com.gsanches.file_format_converter.services.AutoFileFormatConverterService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class JpgToPdfStrategy implements FileConversionStrategy {
 
@@ -26,8 +24,8 @@ public class JpgToPdfStrategy implements FileConversionStrategy {
     }
 
     @Override
-    public List<String> convert(String filePath) {
-        return converter.jpgToPdf(filePath);
+    public void convert(String filePath) {
+        converter.jpgToPdf(filePath);
     }
 
 }

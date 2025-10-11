@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConverterService {
@@ -28,12 +27,8 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
     @Value("${storage.uploads}")
     private String uploadsFileFolder;
 
-    //TODO: Take off the Sol name!
     public List<String> pdfToJpg(String absoluteCurrentFileLocation) {
 
-        System.out.println("pdfToJpg absoluteCurrentFileLocation " + absoluteCurrentFileLocation);
-
-        //TODO: Put the line above on a try catch
 
         File pdfFile;
         try {
@@ -44,8 +39,7 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
 
 
         if (!pdfFile.exists()) {
-            System.out.println("PDF file not found: " + absoluteCurrentFileLocation);
-            return null;
+            throw new RuntimeException("Pdf file not found");
         }
 
         try (PDDocument document = PDDocument.load(pdfFile)) {
@@ -55,25 +49,22 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
 
             for (int i = 0; i < document.getNumberOfPages(); i++) { // For each page
                 BufferedImage image = renderer.renderImageWithDPI(i, 300);
-                String imageName = pdfFile.getName().replace(".pdf", "") + "_page_" + (i + 1) + ".jpg";
+                String imageName = pdfFile.getName().replace(".pdf", "") + "-" + (i + 1) + ".jpg";
                 File imageFile = new File(convertedFileFolder, imageName);
                 ImageIO.write(image, "jpg", imageFile);
-                System.out.println("Saved: " + imageFile.getAbsolutePath());
                 savedPaths.add(imageFile.getAbsolutePath());
             }
 
             return savedPaths;
 
         } catch (IOException e) {
-            System.err.println("Error converting PDF: " + e.getMessage());
-            return null;
+            throw new RuntimeException("Error converting pdf", e);
         }
     }
 
     @Override
     public List<String> jpgToPdf(String absoluteCurrentFileLocation) {
         try {
-            System.out.println("absoluteCurrentFileLocation jpgToPdf " + absoluteCurrentFileLocation);
 
             PDDocument doc = new PDDocument();
             PDPage page = new PDPage(PDRectangle.A4);
@@ -139,7 +130,6 @@ public class AutoFileFormatConverterServiceImpl implements AutoFileFormatConvert
         List<String> destinationPaths = new ArrayList<>();
 
         for (String path : absoluteCurrentFileLocationList) {
-            System.out.println("fileLocation AutoFileFormatConverter (path) -> " + path);
             destinationPaths.addAll(pdfToJpg((path)));
         }
         return destinationPaths;

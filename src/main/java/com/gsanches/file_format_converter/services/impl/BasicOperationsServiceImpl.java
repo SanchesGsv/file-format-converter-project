@@ -21,12 +21,6 @@ import java.util.Objects;
 @Service
 public class BasicOperationsServiceImpl implements BasicOperationsService {
 
-    @Value("${storage.uploads}")
-    private String originalFileFolder;
-
-    @Value("${storage.converted}")
-    private String convertedFileFolder;
-
     @Value("${storage}")
     private String storagePath;
 
@@ -38,7 +32,7 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
 
     public String uploadFile(MultipartFile file){
         try {
-            File uploadDir = new File(originalFileFolder);
+            File uploadDir = new File(uploadsStoragePath);
 
             File destination = new File(uploadDir, Objects.requireNonNull(file.getOriginalFilename()));
 
@@ -62,9 +56,21 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
 
         //TODO: Add the / here and on the others places!!!
         //Make sure to use the / for be sure that is inside of a folder
+
+
+        //TODO: This is working???? (see if should I replace the && by ||.
         if(!absoluteDownloadFilePath.startsWith(convertedStoragePath + "/") && !absoluteDownloadFilePath.startsWith(uploadsStoragePath + "/")){
             throw new RuntimeException("Path should start with correct folder path, actual path -> " + absoluteDownloadFilePath);
         }
+
+        //TODO: Certificate that the path is not inside of the correct place but inside of a folder (may be not only here, but also on delete).
+        //TODO: Certificate that the filepath doesn't have any "/", that may affect the work (may be not only here, but also on delete).
+
+
+//        if(absoluteDownloadFilePath.startsWith(convertedStoragePath + "/")) && absoluteDownloadFilePath..contains("/"){ //Here make sure to verify if there is any "/" ONLY after the convertedStoragePath + "/" instead!!
+//
+//            throw new RuntimeException("");
+//        }
 
         try {
             Path filePath = Paths.get(absoluteDownloadFilePath);
@@ -73,18 +79,30 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
             ByteArrayResource resource = new ByteArrayResource(data);
 
             //TODO: see if should I put the correct name for these things.
+
+            String filename;
+
+            if(absoluteDownloadFilePath.startsWith(convertedStoragePath + "/")){
+                filename = absoluteDownloadFilePath.substring(convertedStoragePath.length() + "/".length());
+
+            } else {
+                filename = absoluteDownloadFilePath.substring(uploadsStoragePath.length() + "/".length());
+            }
+
+            //TODO: Certificate that the extension on the end (.jpg, ... works on the download part!)
+
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "putTheCorrectName" + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .contentLength(data.length)
                     .body(resource);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    //TODO: See if should I create another class, only for the multiple tasks (for example downloadsFiles[plural] on the anther class, and downloadFile on this class[singular])
     public void downloadFiles(List<String> absoluteDownloadFilePaths){
         for (String absoluteDownloadFilePath: absoluteDownloadFilePaths) {
             downloadFile(absoluteDownloadFilePath);
@@ -93,13 +111,8 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
 
 
 
-    //TODO: Adjust the return type. make a return different than ResponseEntity here (ServiceImpl).
     public void deleteFile(String filePath){
         File file = new File(filePath);
-
-        //TODO: Organize the Exceptions (see if should I put on an centralized place).
-
-        System.out.println("deleteFile part " + filePath);
 
         if(filePath.isBlank()){
             throw new RuntimeException("FilePath must be not blank");
@@ -112,8 +125,6 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
         if(!filePath.contains(convertedStoragePath) || !filePath.contains(uploadsStoragePath)){
             throw new RuntimeException("filePath to be deleted must be inside of the convertedStorage or uploadsStorage");
         }
-
-        //TODO: Certificate that the file to be deleted is not inside another folder inside of the uploads or converted! Maybe is not super necessary!
 
         //Certificate that the file exists
         if(!file.exists()){
