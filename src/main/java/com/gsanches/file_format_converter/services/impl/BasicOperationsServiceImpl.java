@@ -61,6 +61,7 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
         //TODO: This is working???? (see if should I replace the && by ||.
         if(!absoluteDownloadFilePath.startsWith(convertedStoragePath + "/") && !absoluteDownloadFilePath.startsWith(uploadsStoragePath + "/")){
             throw new RuntimeException("Path should start with correct folder path, actual path -> " + absoluteDownloadFilePath);
+            //FileDestinyIsWrongException InvalidDestinyException
         }
 
         //TODO: Certificate that the path is not inside of the correct place but inside of a folder (may be not only here, but also on delete).
