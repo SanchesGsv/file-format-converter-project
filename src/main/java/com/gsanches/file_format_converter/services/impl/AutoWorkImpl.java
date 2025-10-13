@@ -64,7 +64,6 @@ public class AutoWorkImpl implements AutoWork {
 
         System.out.println("converted Files -> " + grabAllConvertedFiles());
 
-        //TODO: Make the download part works!
         basicOperations.downloadFiles(grabAllConvertedFiles());
     }
 

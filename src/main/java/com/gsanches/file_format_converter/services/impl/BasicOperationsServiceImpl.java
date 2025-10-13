@@ -48,37 +48,20 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
     }
 
 
-    //TODO: Fix the download part here (singular and plural), on the autoWork service impl, and also add the throw's
-    //TODO: Do not use this type of return here (ResponseEntity)!
     public ResponseEntity<Resource> downloadFile(String absoluteDownloadFilePath){
-        //TODO: Make sure that the file to be downloaded is on the converted or uploads folder
-        //Maybe do a single place for put all of these exceptions
+        //TODO: For the download part, adjust the type of return!
 
-        //TODO: Add the / here and on the others places!!!
-        //Make sure to use the / for be sure that is inside of a folder
+        System.out.println("on the downloadFile " + absoluteDownloadFilePath);
 
-
-        //TODO: This is working???? (see if should I replace the && by ||.
         if(!absoluteDownloadFilePath.startsWith(convertedStoragePath + "/") && !absoluteDownloadFilePath.startsWith(uploadsStoragePath + "/")){
             throw new RuntimeException("Path should start with correct folder path, actual path -> " + absoluteDownloadFilePath);
         }
-
-        //TODO: Certificate that the path is not inside of the correct place but inside of a folder (may be not only here, but also on delete).
-        //TODO: Certificate that the filepath doesn't have any "/", that may affect the work (may be not only here, but also on delete).
-
-
-//        if(absoluteDownloadFilePath.startsWith(convertedStoragePath + "/")) && absoluteDownloadFilePath..contains("/"){ //Here make sure to verify if there is any "/" ONLY after the convertedStoragePath + "/" instead!!
-//
-//            throw new RuntimeException("");
-//        }
 
         try {
             Path filePath = Paths.get(absoluteDownloadFilePath);
 
             byte[] data = Files.readAllBytes(filePath);
             ByteArrayResource resource = new ByteArrayResource(data);
-
-            //TODO: see if should I put the correct name for these things.
 
             String filename;
 
@@ -88,8 +71,6 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
             } else {
                 filename = absoluteDownloadFilePath.substring(uploadsStoragePath.length() + "/".length());
             }
-
-            //TODO: Certificate that the extension on the end (.jpg, ... works on the download part!)
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
