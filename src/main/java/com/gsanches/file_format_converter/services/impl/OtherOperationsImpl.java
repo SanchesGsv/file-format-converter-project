@@ -1,5 +1,6 @@
 package com.gsanches.file_format_converter.services.impl;
 
+import com.gsanches.file_format_converter.dto.FileDownloadDto;
 import com.gsanches.file_format_converter.services.AutoWork;
 import com.gsanches.file_format_converter.services.BasicOperationsService;
 import com.gsanches.file_format_converter.services.OtherOperations;
@@ -26,11 +27,11 @@ public class OtherOperationsImpl implements OtherOperations {
     }
 
     @Override
-    public void downloadAllConvertedFiles() {
+    public List<FileDownloadDto> downloadAllConvertedFiles() {
         List<String> convertedFiles = grabAllConvertedFiles();
         System.out.println("convertedFiles " + convertedFiles);
 
-        basicOperationsService.downloadFiles(grabAllConvertedFiles());
+        return basicOperationsService.downloadFiles(grabAllConvertedFiles());
 
     }
 

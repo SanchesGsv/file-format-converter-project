@@ -1,9 +1,11 @@
 package com.gsanches.file_format_converter.services;
 
+import com.gsanches.file_format_converter.dto.FileDownloadDto;
+
 import java.util.List;
 
 public interface OtherOperations {
-    void downloadAllConvertedFiles();
+    List<FileDownloadDto> downloadAllConvertedFiles();
 
     List<String> grabAllConvertedFiles();
 

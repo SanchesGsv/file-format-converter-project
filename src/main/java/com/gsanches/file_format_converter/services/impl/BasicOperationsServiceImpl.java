@@ -1,5 +1,6 @@
 package com.gsanches.file_format_converter.services.impl;
 
+import com.gsanches.file_format_converter.dto.FileDownloadDto;
 import com.gsanches.file_format_converter.services.BasicOperationsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,9 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,46 +51,40 @@ public class BasicOperationsServiceImpl implements BasicOperationsService {
     }
 
 
-    public ResponseEntity<Resource> downloadFile(String absoluteDownloadFilePath){
-        //TODO: For the download part, adjust the type of return!
-
+    //TODO: Adjust, put this type of return on the Controller instead of here.
+    public FileDownloadDto downloadFile(String absoluteDownloadFilePath){
         System.out.println("on the downloadFile " + absoluteDownloadFilePath);
 
-        if(!absoluteDownloadFilePath.startsWith(convertedStoragePath + "/") && !absoluteDownloadFilePath.startsWith(uploadsStoragePath + "/")){
-            throw new RuntimeException("Path should start with correct folder path, actual path -> " + absoluteDownloadFilePath);
+        if (!absoluteDownloadFilePath.startsWith(convertedStoragePath + "/") &&
+                !absoluteDownloadFilePath.startsWith(uploadsStoragePath + "/")) {
+            throw new IllegalArgumentException("Invalid path: " + absoluteDownloadFilePath);
         }
 
         try {
             Path filePath = Paths.get(absoluteDownloadFilePath);
-
             byte[] data = Files.readAllBytes(filePath);
-            ByteArrayResource resource = new ByteArrayResource(data);
 
-            String filename;
+            String filename = absoluteDownloadFilePath.startsWith(convertedStoragePath + "/")
+                    ? absoluteDownloadFilePath.substring(convertedStoragePath.length() + 1)
+                    : absoluteDownloadFilePath.substring(uploadsStoragePath.length() + 1);
 
-            if(absoluteDownloadFilePath.startsWith(convertedStoragePath + "/")){
-                filename = absoluteDownloadFilePath.substring(convertedStoragePath.length() + "/".length());
+            return new FileDownloadDto(filename, data, data.length, MediaType.APPLICATION_OCTET_STREAM_VALUE);
 
-            } else {
-                filename = absoluteDownloadFilePath.substring(uploadsStoragePath.length() + "/".length());
-            }
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .contentLength(data.length)
-                    .body(resource);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read file: " + absoluteDownloadFilePath, e);
         }
-
     }
 
-    public void downloadFiles(List<String> absoluteDownloadFilePaths){
+
+
+    public List<FileDownloadDto> downloadFiles(List<String> absoluteDownloadFilePaths){
+        List<FileDownloadDto> fileDownloadDtoList = new ArrayList<>();
+
         for (String absoluteDownloadFilePath: absoluteDownloadFilePaths) {
-            downloadFile(absoluteDownloadFilePath);
+            fileDownloadDtoList.add(downloadFile(absoluteDownloadFilePath));
         }
+
+        return fileDownloadDtoList;
     }
 
 

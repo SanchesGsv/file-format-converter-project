@@ -1,8 +1,12 @@
 package com.gsanches.file_format_converter.controllers;
 
+import com.gsanches.file_format_converter.dto.FileDownloadDto;
 import com.gsanches.file_format_converter.services.AutoWork;
 import com.gsanches.file_format_converter.enums.FileConversionEnum;
 import com.gsanches.file_format_converter.services.OtherOperations;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,12 +40,20 @@ public class AutoWorkController {
     }
 
     @GetMapping("/download-converted-files")
-    public ResponseEntity<Void> downloadConvertedFiles(){
-        System.out.println("Before");
-        otherOperations.downloadAllConvertedFiles();
-        System.out.println("After");
+    public ResponseEntity<ByteArrayResource> downloadConvertedFiles(){
 
-        return ResponseEntity.ok().build();
+        //TODO: WORKING, BUT ADJUST FOR DOWNLOAD MORE THAN ONE AT ONCE, AND ON THE CODE BELOW, ADJUST FOR NOT ONLY getFirst()!
+
+        List<FileDownloadDto> files = otherOperations.downloadAllConvertedFiles();
+
+        //ADJUST FOR NOT GET ONLY THE FIRST ONE!
+        ByteArrayResource resources = new ByteArrayResource(files.getFirst().getContent());;
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + files.getFirst().getFilename() + "\"")
+                .contentType(MediaType.parseMediaType(files.getFirst().getContentType()))
+                .contentLength(files.getFirst().getSize())
+                .body(resources);
     }
 
 
